@@ -16,7 +16,6 @@ class Server:
         if cherrypy.request.method == "OPTIONS":
             return ''
         body = cherrypy.request.json
-
         lines = {0 : [0,1,2,3,4],
         1 : [5,6,7,8,9],
         2 : [10,11,12,13,14],
@@ -43,7 +42,11 @@ class Server:
                 us = 1
                 other = 0 
             return [us,other]
+
         def moves(dico):
+            """
+        Regarde si les cases qu'on peut bouger
+            """
             play_move = {}
             case = [0,1,2,3,4,5,9,10,14,15,19,20,21,22,23,24]
             for i in case:
@@ -67,6 +70,9 @@ class Server:
             return play_move
 
         def best_columns(dico) :
+            """
+        Regarde les nombres de pions dans une colonne
+            """
             score_column = 0
             strat = []
             for i in moves(dico) :
@@ -80,6 +86,9 @@ class Server:
             return strat 
 
         def best_lines(dico) :
+            """
+        Regarde le nombre de pions dans une ligne
+            """
             score_lignes = 0
             strat = []
             for i in moves(dico) :
@@ -93,6 +102,10 @@ class Server:
             return strat
 
         def best_play(): 
+            """
+        Prends les coups possibles avec la meilleur direction et le plus grand
+        nombre de pions dans une ligne ou colonne
+            """
             best_move = {}
             state_game = deepcopy(body['game'])
             for i in moves(state_game) :
@@ -192,20 +205,22 @@ class Server:
                     best_direc = 'S'
                 best_move[i] = [best_direc,max(Wc,Nc,Ec,Sc)]
             return best_move
-
         cube = best_play()
         result = []
+        direc_max = []
         for i in cube :
             result += [cube[i][1]]
         for i in cube : 
             if cube[i][1] == max(result) :
-                direc = i 
+                direc_max += [i]
+        direc = choice(direc_max)
+        message = choice(['Sah quel plaisir' , 'Cheh','/ff', 'Go jouer à OXO', 'Libérez Lacrim'])
         return {
 	"move": {
 		"cube": direc,
 		"direction":cube[direc][0]
 	},
-	"message": "cheh"
+	"message": message
 }
 
 if __name__ == "__main__":
